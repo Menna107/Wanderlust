@@ -1,8 +1,7 @@
 export class MyPlansManager {
   constructor() {
-    this.key = "myPlans";
+    this.key = "myPlans"; // localStorage key
     this.plans = JSON.parse(localStorage.getItem(this.key)) || [];
-
     this.currentFilter = "all";
 
     const clearAllBtn = document.getElementById("clear-all-plans-btn");
@@ -34,13 +33,12 @@ export class MyPlansManager {
   addPlan(planData) {
     const exists = this.plans.some(
       (p) =>
-        p.type?.toLowerCase() === planData.type?.toLowerCase() &&
+        p.type === planData.type &&
         ((p.name && planData.name && p.name === planData.name) ||
           (p.startDate &&
             planData.startDate &&
             p.startDate === planData.startDate)),
     );
-
     if (!exists) {
       this.plans.push(planData);
       this.savePlans();
@@ -57,7 +55,7 @@ export class MyPlansManager {
     this.plans = this.plans.filter(
       (p) =>
         !(
-          p.type?.toLowerCase() === planData.type?.toLowerCase() &&
+          p.type === planData.type &&
           ((p.name && planData.name && p.name === planData.name) ||
             (p.startDate &&
               planData.startDate &&
@@ -71,12 +69,8 @@ export class MyPlansManager {
     if (!dateStr) return "";
     const dateObj = new Date(dateStr);
     if (isNaN(dateObj)) return dateStr;
-
-    return dateObj.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    const options = { month: "short", day: "numeric", year: "numeric" };
+    return dateObj.toLocaleDateString("en-US", options);
   }
 
   renderPlans() {
@@ -192,7 +186,7 @@ export class MyPlansManager {
 
     Swal.fire({
       title: "Clear All Plans?",
-      text: "This will permanently delete all your saved plans.",
+      text: "This will permanently delete all your saved plans. This action cannot be undone!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -202,8 +196,22 @@ export class MyPlansManager {
       if (result.isConfirmed) {
         this.plans = [];
         localStorage.removeItem(this.key);
+
+        document.querySelectorAll("[data-plan-id]").forEach((icon) => {
+          icon.classList.remove("saved");
+          icon.innerHTML = '<i class="fa-regular fa-heart"></i>';
+        });
+
         this.renderPlans();
         this.updateCounters();
+
+        Swal.fire({
+          title: "All Cleared!",
+          text: "All your plans have been deleted.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       }
     });
   }
@@ -211,12 +219,9 @@ export class MyPlansManager {
   updateCounters() {
     const counts = {
       all: this.plans.length,
-      holiday: this.plans.filter((p) => p.type?.toLowerCase() === "holiday")
-        .length,
-      event: this.plans.filter((p) => p.type?.toLowerCase() === "event").length,
-      longWeekend: this.plans.filter(
-        (p) => p.type?.toLowerCase() === "longweekend",
-      ).length,
+      holiday: this.plans.filter((p) => p.type === "holiday").length,
+      event: this.plans.filter((p) => p.type === "event").length,
+      longWeekend: this.plans.filter((p) => p.type === "longWeekend").length,
     };
 
     document.getElementById("filter-all-count").textContent = counts.all;
@@ -224,12 +229,28 @@ export class MyPlansManager {
       counts.holiday;
     document.getElementById("filter-event-count").textContent = counts.event;
     document.getElementById("filter-lw-count").textContent = counts.longWeekend;
+
+    const plansBadge = document.getElementById("plans-count");
+    if (plansBadge) {
+      if (counts.all > 0) {
+        plansBadge.textContent = counts.all;
+        plansBadge.classList.remove("hidden");
+      } else {
+        plansBadge.textContent = 0;
+        plansBadge.classList.add("hidden");
+      }
+    }
+
+    const statSavedEl = document.getElementById("stat-saved");
+    if (statSavedEl) {
+      statSavedEl.textContent = counts.all;
+    }
   }
 
   isPlanSaved(planData) {
     return this.plans.some(
       (p) =>
-        p.type?.toLowerCase() === planData.type?.toLowerCase() &&
+        p.type === planData.type &&
         ((p.name && planData.name && p.name === planData.name) ||
           (p.startDate &&
             planData.startDate &&
