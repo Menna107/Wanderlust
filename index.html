@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wanderlust - Your Global Travel Planner (Starter)</title>
+
+    <!-- Font Awesome -->
+    <script>
+      window.FontAwesomeConfig = { autoReplaceSvg: "nest" };
+    </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Stylesheets-->
+    <link rel="stylesheet" href="./src/css/base.css" />
+    <link rel="stylesheet" href="./src/css/layout.css" />
+    <link rel="stylesheet" href="./src/css/components.css" />
+    <link rel="stylesheet" href="./src/css/dashboard.css" />
+    <link rel="stylesheet" href="./src/css/views.css" />
+    <link rel="stylesheet" href="./src/css/weather.css" />
+    <link rel="stylesheet" href="./src/css/widgets.css" />
+    <link rel="stylesheet" href="./src/css/utilities.css" />
+  </head>
+  <body>
+    <div id="app" class="flex min-h-screen">
+      <!-- ======================= SIDEBAR ======================= -->
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon"><i class="fa-solid fa-paper-plane"></i></div>
+          <span class="logo-text">Wanderlust</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <span class="nav-section-title">Main</span>
+            <a href="#" data-view="dashboard" class="nav-item active">
+              <i class="fa-solid fa-house"></i><span>Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <span class="nav-section-title">Explore</span>
+            <a href="#" data-view="holidays" class="nav-item">
+              <i class="fa-solid fa-calendar-days"></i><span>Holidays</span>
+            </a>
+            <a href="#" data-view="events" class="nav-item">
+              <i class="fa-solid fa-ticket"></i><span>Events</span>
+            </a>
+            <a href="#" data-view="weather" class="nav-item">
+              <i class="fa-solid fa-cloud-sun"></i><span>Weather</span>
+            </a>
+            <a href="#" data-view="long-weekends" class="nav-item">
+              <i class="fa-solid fa-umbrella-beach"></i
+              ><span>Long Weekends</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <span class="nav-section-title">Travel Tools</span>
+
+            <a href="#" data-view="sun-times" class="nav-item">
+              <i class="fa-solid fa-sun"></i><span>Sun Times</span>
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <span class="nav-section-title">Personal</span>
+            <a href="#" data-view="my-plans" class="nav-item">
+              <i class="fa-solid fa-heart"></i><span>My Plans</span>
+              <span id="plans-count" class="nav-badge hidden">0</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+            <div class="user-info">
+              <span class="user-name">Traveler</span>
+              <span class="user-status">Planning mode</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+      <!-- ======================= MAIN CONTENT ======================= -->
+      <div class="main-wrapper">
+        <!-- ======================= TOP HEADER ======================= -->
+        <header id="top-header" class="top-header">
+          <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="header-title">
+            <h1 id="page-title">Dashboard</h1>
+            <p id="page-subtitle">
+              Welcome back! Ready to plan your next adventure?
+            </p>
+          </div>
+
+          <div class="header-actions">
+            <div class="header-datetime">
+              <i class="fa-regular fa-clock"></i>
+              <span id="current-datetime">Sat, Jan 25, 08:30 AM</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- ======================= MAIN CONTENT AREA ======================= -->
+        <main id="main-content" class="main-content">
+          <!-- ==================== DASHBOARD VIEW ==================== -->
+          <section id="dashboard-view" class="view active">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+              <div class="stat-card stat-primary">
+                <div class="stat-icon">
+                  <i class="fa-solid fa-earth-americas"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value" id="stat-countries">90+</span>
+                  <span class="stat-label">Countries Available</span>
+                </div>
+              </div>
+              <div class="stat-card stat-success">
+                <div class="stat-icon">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value" id="stat-holidays">16</span>
+                  <span class="stat-label">Holidays This Year</span>
+                </div>
+              </div>
+              <div class="stat-card stat-warning">
+                <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="stat-content">
+                  <span class="stat-value" id="stat-events">500+</span>
+                  <span class="stat-label">Events Worldwide</span>
+                </div>
+              </div>
+              <div class="stat-card stat-danger">
+                <div class="stat-icon"><i class="fa-solid fa-heart"></i></div>
+                <div class="stat-content">
+                  <span class="stat-value" id="stat-saved">0</span>
+                  <span class="stat-label">Saved Plans</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Global Country Search -->
+            <div class="section-card search-section">
+              <div class="section-header">
+                <h2>
+                  <i class="fa-solid fa-globe"></i> Select Your Destination
+                </h2>
+                <p class="section-subtitle">
+                  Choose a country to explore holidays, events, weather, and
+                  more
+                </p>
+              </div>
+              <div class="dashboard-search-form">
+                <div class="search-form-row">
+                  <div class="form-group flex-2">
+                    <label
+                      ><i class="fa-solid fa-earth-americas"></i> Country</label
+                    >
+                    <select
+                      id="global-country"
+                      class="form-select"
+                      style="display: none"
+                    >
+                      <!-- <option value="">Select Country</option> -->
+                      <!-- <option value="EG" selected>🇪🇬 Egypt</option> -->
+                      <!-- TODO: Populate dynamically from API -->
+                    </select>
+
+                    <div
+                      class="custom-select-wrapper"
+                      id="global-country-custom"
+                    >
+                      <div class="custom-select-trigger">
+                        <img
+                          src=""
+                          class="flag-img"
+                          alt="flag"
+                          onerror="this.style.display = 'none'"
+                        />
+                        <span class="selected-text placeholder"
+                          >Select Country</span
+                        >
+
+                        <i class="fa-solid fa-angle-down arrow"></i>
+                      </div>
+
+                      <div class="custom-select-dropdown">
+                        <div class="custom-select-search">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                          <input
+                            type="text"
+                            placeholder="Search countries..."
+                            autocomplete="off"
+                          />
+                        </div>
+                        <div class="custom-select-options"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group flex-2">
+                    <label><i class="fa-solid fa-city"></i> City</label>
+                    <select
+                      id="global-city"
+                      class="form-select"
+                      style="display: none"
+                    >
+                      <!-- <option value="Cairo" selected>Cairo</option> -->
+                      <!-- <option value="Alexandria">Alexandria</option> -->
+                    </select>
+
+                    <div class="simple-select-wrapper" id="global-city-simple">
+                      <div class="simple-select-trigger">
+                        <span class="select-icon">
+                          <i class="fa-solid fa-city"></i>
+                        </span>
+                        <span class="selected-text placeholder"
+                          >Select City</span
+                        >
+                        <i class="fa-solid fa-angle-down arrow"></i>
+                      </div>
+
+                      <div class="simple-select-dropdown">
+                        <div
+                          class="simple-select-options"
+                          data-value
+                          data-lat
+                          date-lon
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group flex-1">
+                    <label><i class="fa-solid fa-calendar"></i> Year</label>
+                    <select
+                      id="global-year"
+                      class="form-select"
+                      style="display: none"
+                    >
+                      <option value="2026">2026</option>
+                      <option value="2027">2027</option>
+                      <option value="2028">2028</option>
+                    </select>
+
+                    <div class="simple-select-wrapper" id="global-year-simple">
+                      <div class="simple-select-trigger">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span class="selected-text">2027</span>
+
+                        <i class="fa-solid fa-angle-down arrow"></i>
+                      </div>
+
+                      <div class="simple-select-dropdown">
+                        <div class="simple-select-option" data-value="2026">
+                          2026
+                        </div>
+                        <div
+                          class="simple-select-option"
+                          selected
+                          data-value="2027"
+                        >
+                          2027
+                        </div>
+                        <div class="simple-select-option" data-value="2028">
+                          2028
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group search-btn-group">
+                    <label>&nbsp;</label>
+                    <button
+                      type="button"
+                      id="global-search-btn"
+                      class="btn btn-primary btn-explore"
+                    >
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <span>Explore</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Selected Destination Display - STATIC EGYPT DATA -->
+                <div
+                  id="selected-destination"
+                  class="selected-destination"
+                  style="display: none"
+                >
+                  <div class="selected-flag">
+                    <img
+                      id="selected-country-flag"
+                      src="https://flagcdn.com/w80/eg.png"
+                      alt="Egypt"
+                    />
+                  </div>
+                  <div class="selected-info">
+                    <span
+                      class="selected-country-name"
+                      id="selected-country-name"
+                      >Egypt</span
+                    >
+                    <span class="selected-city-name" id="selected-city-name"
+                      >• Cairo</span
+                    >
+                  </div>
+                  <button class="clear-selection-btn" id="clear-selection-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Country Info Section - STATIC EGYPT DATA -->
+            <div
+              class="section-card country-info-section"
+              id="dashboard-country-info-section"
+            >
+              <div class="section-header">
+                <h2><i class="fa-solid fa-flag"></i> Country Information</h2>
+              </div>
+
+              <div class="country-info-placeholder">
+                <div class="placeholder-icon">
+                  <i class="fa-solid fa-globe"></i>
+                </div>
+                <p>Select a country to view detailed information</p>
+              </div>
+
+              <div
+                id="dashboard-country-info"
+                class="dashboard-country-info"
+                style="display: none"
+              >
+                <div class="dashboard-country-header">
+                  <img class="dashboard-country-flag" />
+                  <div class="dashboard-country-title">
+                    <h3></h3>
+                    <p class="official-name"></p>
+                    <span class="region"
+                      ><i class="fa-solid fa-location-dot"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="dashboard-local-time">
+                  <div class="local-time-display">
+                    <i class="fa-solid fa-clock"></i>
+                    <span
+                      class="local-time-value"
+                      id="country-local-time"
+                    ></span>
+                    <span class="local-time-zone"></span>
+                  </div>
+                </div>
+
+                <div class="dashboard-country-grid">
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span class="label">Capital</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-users"></i>
+                    <span class="label">Population</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-ruler-combined"></i>
+                    <span class="label">Area</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-globe"></i>
+                    <span class="label">Continent</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-phone"></i>
+                    <span class="label">Calling Code</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-car"></i>
+                    <span class="label">Driving Side</span>
+                    <span class="value"></span>
+                  </div>
+                  <div class="dashboard-country-detail">
+                    <i class="fa-solid fa-calendar-week"></i>
+                    <span class="label">Week Starts</span>
+                    <span class="value"></span>
+                  </div>
+                </div>
+
+                <div class="dashboard-country-extras">
+                  <div class="dashboard-country-extra">
+                    <h4><i class="fa-solid fa-coins"></i> Currency</h4>
+                    <div class="extra-tags">
+                      <span class="extra-tag"></span>
+                    </div>
+                  </div>
+                  <div class="dashboard-country-extra">
+                    <h4><i class="fa-solid fa-language"></i> Languages</h4>
+                    <div class="extra-tags">
+                      <span class="extra-tag"></span>
+                    </div>
+                  </div>
+                  <div class="dashboard-country-extra">
+                    <h4>
+                      <i class="fa-solid fa-map-location-dot"></i> Neighbors
+                    </h4>
+                    <div class="extra-tags">
+                      <span class="extra-tag border-tag"></span>
+                      <span class="extra-tag border-tag"></span>
+                      <span class="extra-tag border-tag"></span>
+                      <span class="extra-tag border-tag"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dashboard-country-actions">
+                  <a href="" target="_blank" class="btn-map-link">
+                    <i class="fa-solid fa-map"></i> View on Google Maps
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== HOLIDAYS VIEW - STATIC EGYPT 2026 DATA ==================== -->
+          <section id="holidays-view" class="view">
+            <div class="view-header-card gradient-green">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+
+              <div class="view-header-content">
+                <h2>Public Holidays Explorer</h2>
+                <p>
+                  Browse public holidays for any country and plan your trips
+                  around them
+                </p>
+              </div>
+
+              <div class="view-header-selection" id="holidays-selection">
+                <div class="current-selection-badge">
+                  <img
+                    src="https://flagcdn.com/w40/eg.png"
+                    alt="Egypt"
+                    class="selection-flag"
+                  />
+                  <span class="selected-country">Egypt</span>
+                  <span class="selection-year">2026</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="holidays-content" class="holidays-content">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fa-solid fa-calendar-xmark"></i>
+                </div>
+                <h3>No Country Selected</h3>
+                <p>
+                  Select a country from the dashboard to explore public holidays
+                </p>
+
+                <button class="btn btn-primary btn-go-dashboard">
+                  <i class="fa-solid fa-globe"></i>
+                  Go to Dashboard
+                </button>
+              </div>
+
+              <!-- Static Egypt 2026 Holidays -->
+            </div>
+          </section>
+
+          <!-- ==================== EVENTS VIEW - STATIC CAIRO DATA ==================== -->
+          <section id="events-view" class="view">
+            <div class="view-header-card gradient-purple">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-ticket"></i>
+              </div>
+              <div class="view-header-content">
+                <h2>Events Explorer</h2>
+                <p>
+                  Discover concerts, sports, theatre and more in cities
+                  worldwide
+                </p>
+              </div>
+              <div class="view-header-selection" id="events-selection">
+                <div class="current-selection-badge">
+                  <img
+                    src="https://flagcdn.com/w40/eg.png"
+                    alt="Egypt"
+                    class="selection-flag"
+                  />
+                  <span class="selected-country">Egypt</span>
+                  <span class="selection-city"></span>
+                </div>
+              </div>
+            </div>
+
+            <div id="events-content" class="events-grid-layout">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fa-solid fa-ticket"></i>
+                </div>
+                <h3>No Events Found</h3>
+                <p>No events found for this location</p>
+
+                <button class="btn btn-primary btn-go-dashboard">
+                  <i class="fa-solid fa-globe"></i>
+                  Go to Dashboard
+                </button>
+              </div>
+
+              <!-- <div class="event-card">
+                <div class="event-card-image">
+                  <img
+                    src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop"
+                    alt="Jazz Night"
+                  />
+                  <span class="event-card-category">Music</span>
+                  <button class="event-card-save">
+                    <i class="fa-regular fa-heart"></i>
+                  </button>
+                </div>
+                <div class="event-card-body">
+                  <h3>Jazz Night Live in Cairo</h3>
+                  <div class="event-card-info">
+                    <div>
+                      <i class="fa-regular fa-calendar"></i>Feb 15, 2026 at
+                      20:00
+                    </div>
+                    <div>
+                      <i class="fa-solid fa-location-dot"></i>Cairo Opera House,
+                      Cairo
+                    </div>
+                  </div>
+                  <div class="event-card-footer">
+                    <button class="btn-event">
+                      <i class="fa-regular fa-heart"></i> Save
+                    </button>
+                    <a href="#" class="btn-buy-ticket"
+                      ><i class="fa-solid fa-ticket"></i> Buy Tickets</a
+                    >
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </section>
+
+          <!-- ==================== WEATHER VIEW - STATIC CAIRO DATA ==================== -->
+          <section id="weather-view" class="view">
+            <div class="view-header-card gradient-blue">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-cloud-sun"></i>
+              </div>
+              <div class="view-header-content">
+                <h2>Weather Forecast</h2>
+                <p>Check 7-day weather forecasts for cities around the world</p>
+              </div>
+              <div class="view-header-selection" id="weather-selection">
+                <div class="current-selection-badge">
+                  <img
+                    src="https://flagcdn.com/w40/eg.png"
+                    alt="Egypt"
+                    class="selection-flag"
+                  />
+                  <span>Egypt</span>
+                  <span class="selection-city">• Cairo</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="weather-content" class="weather-layout">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fa-solid fa-cloud-sun"></i>
+                </div>
+                <h3>No City Selected</h3>
+                <p>
+                  Select a country and city from the dashboard to see the
+                  weather forecast
+                </p>
+
+                <button class="btn btn-primary btn-go-dashboard">
+                  <i class="fa-solid fa-globe"></i>
+                  Go to Dashboard
+                </button>
+              </div>
+
+              <div class="content" style="display: none">
+                <!-- Current Weather Hero -->
+                <div class="weather-hero-card weather-sunny">
+                  <div class="weather-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Cairo</span>
+                    <span class="weather-time">Saturday, January 25, 2026</span>
+                  </div>
+                  <div class="weather-hero-main">
+                    <div class="weather-hero-left">
+                      <div class="weather-hero-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="weather-hero-temp">
+                        <span class="temp-value">22</span>
+                        <span class="temp-unit">°C</span>
+                      </div>
+                    </div>
+                    <div class="weather-hero-right">
+                      <div class="weather-condition">Clear sky</div>
+                      <div class="weather-feels">Feels like 21°C</div>
+                      <div class="weather-high-low">
+                        <span class="high"
+                          ><i class="fa-solid fa-arrow-up"></i> 25°</span
+                        >
+                        <span class="low"
+                          ><i class="fa-solid fa-arrow-down"></i> 12°</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Weather Details Grid -->
+                <div class="weather-details-grid">
+                  <div class="weather-detail-card">
+                    <div class="detail-icon humidity">
+                      <i class="fa-solid fa-droplet"></i>
+                    </div>
+                    <div class="detail-info">
+                      <span class="detail-label">Humidity</span>
+                      <span class="detail-value humidity-value">45%</span>
+                    </div>
+                    <div class="detail-bar">
+                      <div class="detail-bar-fill" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  <div class="weather-detail-card">
+                    <div class="detail-icon wind">
+                      <i class="fa-solid fa-wind"></i>
+                    </div>
+                    <div class="detail-info">
+                      <span class="detail-label">Wind</span>
+                      <span class="detail-value wind-value">15 km/h</span>
+                    </div>
+                  </div>
+                  <div class="weather-detail-card">
+                    <div class="detail-icon uv">
+                      <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div class="detail-info">
+                      <span class="detail-label">UV Index</span>
+                      <span class="detail-value uv-value">6</span>
+                    </div>
+                    <div class="detail-extra uv-level low">Low</div>
+                  </div>
+                  <div class="weather-detail-card">
+                    <div class="detail-icon precip">
+                      <i class="fa-solid fa-cloud-rain"></i>
+                    </div>
+                    <div class="detail-info">
+                      <span class="detail-label">Precipitation</span>
+                      <span class="detail-value precip-value">100%</span>
+                    </div>
+                    <div class="detail-extra precip-extra">0.0mm expected</div>
+                  </div>
+
+                  <div class="weather-detail-card sunrise-sunset">
+                    <div class="sun-times-visual">
+                      <div class="sun-time sunrise">
+                        <i class="fa-solid fa-question"></i>
+                        <span class="sun-label">Sunrise</span>
+                        <span class="sun-value">04:43 AM</span>
+                      </div>
+                      <div class="sun-arc">
+                        <div class="sun-arc-path"></div>
+                        <div
+                          class="sun-position"
+                          style="--sun-progress: 60%"
+                        ></div>
+                      </div>
+                      <div class="sun-time sunset">
+                        <i class="fa-solid fa-question"></i>
+                        <span class="sun-label">Sunset</span>
+                        <span class="sun-value">05:43 9M</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hourly Forecast -->
+                <div class="weather-section">
+                  <h3 class="weather-section-title">
+                    <i class="fa-solid fa-clock"></i> Hourly Forecast
+                  </h3>
+                  <div class="hourly-scroll">
+                    <div class="hourly-item now">
+                      <span class="hourly-time">Now</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <span class="hourly-temp">22°</span>
+                      <div class="hourly-precip">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">10 AM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <span class="hourly-temp">23°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">11 AM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <span class="hourly-temp">24°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">12 PM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <span class="hourly-temp">25°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">1 PM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <span class="hourly-temp">25°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">2 PM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                      </div>
+                      <span class="hourly-temp">24°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">3 PM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                      </div>
+                      <span class="hourly-temp">23°</span>
+                    </div>
+                    <div class="hourly-item">
+                      <span class="hourly-time">4 PM</span>
+                      <div class="hourly-icon">
+                        <i class="fa-solid fa-cloud"></i>
+                      </div>
+                      <span class="hourly-temp">21°</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 7-Day Forecast -->
+                <div class="weather-section">
+                  <h3 class="weather-section-title">
+                    <i class="fa-solid fa-calendar-week"></i> 7-Day Forecast
+                  </h3>
+                  <div class="forecast-list">
+                    <div class="forecast-day today">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Today</span
+                        ><span class="day-date">25 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">25°</span
+                        ><span class="temp-min">12°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Sun</span
+                        ><span class="day-date">26 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">24°</span
+                        ><span class="temp-min">11°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Mon</span
+                        ><span class="day-date">27 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">23°</span
+                        ><span class="temp-min">12°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i><span>10%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Tue</span
+                        ><span class="day-date">28 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-cloud"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">21°</span
+                        ><span class="temp-min">10°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i><span>20%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Wed</span
+                        ><span class="day-date">29 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">22°</span
+                        ><span class="temp-min">11°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Thu</span
+                        ><span class="day-date">30 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">24°</span
+                        ><span class="temp-min">12°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i> <span>100%</span>
+                      </div>
+                    </div>
+                    <div class="forecast-day">
+                      <div class="forecast-day-name">
+                        <span class="day-label">Fri</span
+                        ><span class="day-date">31 Jan</span>
+                      </div>
+                      <div class="forecast-icon">
+                        <i class="fa-solid fa-sun"></i>
+                      </div>
+                      <div class="forecast-temps">
+                        <span class="temp-max">25°</span
+                        ><span class="temp-min">13°</span>
+                      </div>
+                      <div class="forecast-precip">
+                        <i class="fa-solid fa-droplet"></i> <span>100%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== LONG WEEKENDS VIEW - STATIC EGYPT DATA ==================== -->
+          <section id="long-weekends-view" class="view">
+            <div class="view-header-card gradient-orange">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-umbrella-beach"></i>
+              </div>
+              <div class="view-header-content">
+                <h2>Long Weekend Finder</h2>
+                <p>
+                  Find holidays near weekends - perfect for planning mini-trips!
+                </p>
+              </div>
+              <div class="view-header-selection" id="view-header-selection">
+                <div class="current-selection-badge">
+                  <img
+                    src="https://flagcdn.com/w40/eg.png"
+                    alt="Egypt"
+                    class="selection-flag"
+                  />
+                  <span>Egypt</span>
+                  <span class="selection-year">2026</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="lw-content">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fa-solid fa-umbrella-beach"></i>
+                </div>
+                <h3>No Country Selected</h3>
+                <p>
+                  Select a country from the dashboard to discover long weekend
+                  opportunities
+                </p>
+
+                <button class="btn btn-primary btn-go-dashboard">
+                  <i class="fa-solid fa-globe"></i>
+                  Go to Dashboard
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== SUN TIMES VIEW - STATIC CAIRO DATA ==================== -->
+          <section id="sun-times-view" class="view">
+            <div class="view-header-card gradient-sunset">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-sun"></i>
+              </div>
+              <div class="view-header-content">
+                <h2>Sunrise & Sunset Times</h2>
+                <p>
+                  Plan your activities around golden hour - perfect for
+                  photographers and early risers
+                </p>
+              </div>
+              <div class="view-header-selection">
+                <div class="current-selection-badge">
+                  <img
+                    src="https://flagcdn.com/w40/eg.png"
+                    alt="Egypt"
+                    class="selection-flag"
+                  />
+                  <span>Egypt</span>
+                  <span class="selection-city">• Cairo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="fa-solid fa-sun"></i>
+              </div>
+              <h3>No City Selected</h3>
+              <p>
+                Select a country and city from the dashboard to see sunrise and
+                sunset times
+              </p>
+
+              <button class="btn btn-primary btn-go-dashboard">
+                <i class="fa-solid fa-globe"></i>
+                Go to Dashboard
+              </button>
+            </div>
+
+            <div
+              style="display: none"
+              id="sun-times-content"
+              class="sun-times-layout"
+            >
+              <div class="sun-main-card">
+                <div class="sun-main-header">
+                  <div class="sun-location">
+                    <h2><i class="fa-solid fa-location-dot"></i> Cairo</h2>
+                    <p>Sun times for your selected location</p>
+                  </div>
+                  <div class="sun-date-display">
+                    <div class="date">January 25, 2026</div>
+                    <div class="day">Saturday</div>
+                  </div>
+                </div>
+
+                <div class="sun-times-grid"></div>
+              </div>
+
+              <div class="day-length-card">
+                <h3>
+                  <i class="fa-solid fa-chart-pie"></i> Daylight Distribution
+                </h3>
+                <div class="day-progress">
+                  <div class="day-progress-bar">
+                    <div class="day-progress-fill" style="width: 44.6%"></div>
+                  </div>
+                </div>
+                <div class="day-length-stats">
+                  <div class="day-stat">
+                    <div class="value">10h 42m</div>
+                    <div class="label">Daylight</div>
+                  </div>
+                  <div class="day-stat">
+                    <div class="value">44.6%</div>
+                    <div class="label">of 24 Hours</div>
+                  </div>
+                  <div class="day-stat">
+                    <div class="value">13h 18m</div>
+                    <div class="label">Darkness</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== MY PLANS VIEW - EMPTY STATE ==================== -->
+          <section id="my-plans-view" class="view">
+            <div class="view-header-card gradient-pink">
+              <div class="view-header-icon">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+              <div class="view-header-content">
+                <h2>My Saved Plans</h2>
+                <p>
+                  Your saved holidays, events, and trip ideas all in one place
+                </p>
+              </div>
+              <div class="plans-actions">
+                <button class="btn-white-outline" id="clear-all-plans-btn">
+                  <i class="fa-solid fa-trash"></i> Clear All
+                </button>
+              </div>
+            </div>
+
+            <div class="plans-filter-bar">
+              <button class="plan-filter active" data-filter="all">
+                <i class="fa-solid fa-layer-group"></i> All
+                <span class="filter-count" id="filter-all-count">0</span>
+              </button>
+              <button class="plan-filter" data-filter="holiday">
+                <i class="fa-solid fa-calendar-check"></i> Holidays
+                <span class="filter-count" id="filter-holiday-count">0</span>
+              </button>
+              <button class="plan-filter" data-filter="event">
+                <i class="fa-solid fa-ticket"></i> Events
+                <span class="filter-count" id="filter-event-count">0</span>
+              </button>
+              <button class="plan-filter" data-filter="longweekend">
+                <i class="fa-solid fa-umbrella-beach"></i> Long Weekends
+                <span class="filter-count" id="filter-lw-count">0</span>
+              </button>
+            </div>
+
+            <div id="plans-content" class="plans-grid"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <i
+            class="fa-solid fa-paper-plane fa-spin"
+            style="font-size: 32px; color: var(--primary-500)"
+          ></i>
+        </div>
+        <p id="loading-text">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container">
+      <!-- <div class="toast warning">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>Please select a country first</span>
+        <button class="toast-close" onclick="this.parent.remove()">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </button>
+      </div>
+
+      <div class="toast sucsess">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>Exploring {countryName}, {cityName}!</span>
+        <button class="toast-close" onclick="this.parent.remove()">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </button>
+      </div> -->
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button class="modal-close" id="modal-close-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script type="module" src="./src/js/main.js"></script>
+  </body>
+</html>
